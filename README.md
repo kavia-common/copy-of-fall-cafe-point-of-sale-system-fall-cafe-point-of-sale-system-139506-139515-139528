@@ -1,1 +1,4 @@
-# fall-cafe-point-of-sale-system-139506-139515
+# Fall Cafe Point of Sale System
+
+This repository contains:
+- pos_frontend: React frontend for POS operations (orders, menu management, analytics)

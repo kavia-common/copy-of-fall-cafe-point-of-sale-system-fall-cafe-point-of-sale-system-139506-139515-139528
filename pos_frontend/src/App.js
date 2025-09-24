@@ -1,47 +1,61 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+import React, { useState, useMemo } from 'react';
 import './App.css';
+import './theme.css';
+import './layout.css';
+import Sidebar from './components/Sidebar';
+import HeaderBar from './components/HeaderBar';
+import OrderPage from './pages/OrderPage';
+import MenuPage from './pages/MenuPage';
+import AnalyticsPage from './pages/AnalyticsPage';
 
 // PUBLIC_INTERFACE
 function App() {
+  /**
+   * Root app state for theme and current section
+   * Sections: 'orders' | 'menu' | 'analytics'
+   */
   const [theme, setTheme] = useState('light');
+  const [section, setSection] = useState('orders');
 
-  // Effect to apply theme to document element
-  useEffect(() => {
+  // Apply theme at root HTML element
+  useMemo(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  const toggleTheme = () => setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+
+  const content = useMemo(() => {
+    switch (section) {
+      case 'orders':
+        return <OrderPage />;
+      case 'menu':
+        return <MenuPage />;
+      case 'analytics':
+        return <AnalyticsPage />;
+      default:
+        return <OrderPage />;
+    }
+  }, [section]);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="pos-app">
+      <Sidebar current={section} onNavigate={setSection} />
+      <main className="pos-main">
+        <HeaderBar
+          title={
+            section === 'orders'
+              ? 'Order Entry'
+              : section === 'menu'
+              ? 'Menu Management'
+              : 'Sales Analytics'
+          }
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+        <div className="pos-content">{content}</div>
+      </main>
+      <div className="fall-graphic" aria-hidden="true" />
     </div>
   );
 }
